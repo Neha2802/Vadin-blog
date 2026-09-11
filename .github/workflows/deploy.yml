@@ -39,7 +39,7 @@ jobs:
         # Match `engines.node` in package.json. Bump together if you raise either.
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '24'
           cache: 'npm'
 
       - name: Install dependencies

@@ -1,0 +1,73 @@
+# Deploy the built Astro site to GitHub Pages.
+#
+# Runs on every push to `main` and on manual dispatch from the Actions tab.
+# The build runs in CI; nothing is built or pushed from your local machine.
+#
+# Required one-time setup on GitHub:
+#   Settings → Pages → Build and deployment
+#     Source: GitHub Actions
+#   (No branch selection needed — this workflow uses the deploy-pages action.)
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Allow this workflow to:
+#   - read the repo contents (default for GITHUB_TOKEN)
+#   - write to the Pages deployment environment (required by deploy-pages)
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Don't run multiple deploys for the same ref in flight at once.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build site
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        # Match `engines.node` in package.json. Bump together if you raise either.
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      # The auto-frontmatter script fills in any missing title/description/
+      # pubDate/tags on a new `.md` post before the build reads them.
+      # `astro build` already runs `npm run prebuild` first via the npm
+      # lifecycle hook, so we don't have to invoke it here explicitly.
+
+      - name: Build
+        run: npm run build
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    # Use the protected `github-pages` environment so deploys respect any
+    # branch protection / approval rules you've configured there.
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -15,10 +15,11 @@ on:
   workflow_dispatch:
 
 # Allow this workflow to:
-#   - read the repo contents (default for GITHUB_TOKEN)
+#   - read AND write the repo contents (write so we can commit any
+#     auto-frontmatter changes back to the source)
 #   - write to the Pages deployment environment (required by deploy-pages)
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -34,6 +35,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        # persist-credentials defaults to true, which means subsequent
+        # `git push` calls in this job authenticate as the workflow's
+        # GITHUB_TOKEN. (Push events triggered by GITHUB_TOKEN don't
+        # start new workflow runs, so this can't loop.)
+        with:
+          fetch-depth: 0
 
       - name: Set up Node
         # Match `engines.node` in package.json. Bump together if you raise either.
@@ -45,12 +52,39 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # The auto-frontmatter script fills in any missing title/description/
-      # pubDate/tags on a new `.md` post before the build reads them.
-      # `astro build` already runs `npm run prebuild` first via the npm
-      # lifecycle hook, so we don't have to invoke it here explicitly.
+      - name: Auto-fill missing post frontmatter
+        # Make the auto-frontmatter a visible, first-class step rather
+        # than a side effect of `npm run build` → `prebuild`. Runs the
+        # same `scripts/auto-frontmatter.mjs` you can invoke locally
+        # with `npm run frontmatter`.
+        run: npm run frontmatter
+
+      - name: Commit any synthesized frontmatter back to source
+        # If the script added or updated frontmatter on any post, write
+        # that back to main so the source repo is canonical. Subsequent
+        # runs become no-ops for already-complete posts. Pushes from
+        # GITHUB_TOKEN don't re-trigger this workflow (GitHub safety),
+        # so there's no infinite loop.
+        run: |
+          set -euo pipefail
+          if [[ -n "$(git status --porcelain src/content/blog)" ]]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add src/content/blog
+            # `[skip ci]` is a belt-and-suspenders guard in case the
+            # repo is ever moved to a self-hosted runner or PAT that
+            # would re-trigger the workflow on push.
+            git commit -m "Auto-fill missing frontmatter on new posts [skip ci]"
+            git push
+            echo "::notice::Committed synthesized frontmatter back to source."
+          else
+            echo "No new frontmatter to commit — every post already has complete metadata."
+          fi
 
       - name: Build
+        # `npm run build` still re-runs `prebuild` (= auto-frontmatter)
+        # as a safety net, but it's now a no-op because the script just
+        # committed any missing fields back to the working tree.
         run: npm run build
 
       - name: Upload Pages artifact

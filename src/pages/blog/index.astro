@@ -1,0 +1,29 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { callNumbers } from '../../utils/callNumbers';
+
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const posts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const calls = callNumbers(allPosts);
+---
+
+<BaseLayout title="Blog" description="Every entry on Vadin's blog, most recent first.">
+  <div class="wrap wrap--wide">
+    <section class="hero" style="padding-bottom: 1rem;">
+      <p class="hero__eyebrow">Full index</p>
+      <h1>All entries</h1>
+    </section>
+    <div class="card-grid">
+      {posts.map((post) => (
+        <PostCard
+          slug={post.id}
+          title={post.data.title}
+          description={post.data.description}
+          call={calls.get(post.id) ?? ''}
+        />
+      ))}
+    </div>
+  </div>
+</BaseLayout>

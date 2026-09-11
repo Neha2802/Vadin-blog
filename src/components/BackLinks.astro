@@ -1,0 +1,28 @@
+---
+import type { BacklinkEntry } from '../utils/backlinks';
+import { siteBase } from '../utils/base';
+
+interface Props {
+  links: BacklinkEntry[];
+}
+
+const { links } = Astro.props;
+const base = siteBase(import.meta.env.BASE_URL);
+---
+
+<aside class="backlinks" aria-label="Posts that reference this one">
+  <p class="backlinks__label">Referenced by</p>
+  {
+    links.length === 0 ? (
+      <p class="backlinks__empty">Nothing links here yet.</p>
+    ) : (
+      <ul class="backlinks__list">
+        {links.map((link) => (
+          <li class="backlinks__item">
+            <a href={`${base}blog/${link.slug}/`}>{link.title}</a>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</aside>

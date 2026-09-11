@@ -1,0 +1,44 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostCard from '../components/PostCard.astro';
+import { callNumbers } from '../utils/callNumbers';
+import { siteBase } from '../utils/base';
+
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const posts = allPosts
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 6);
+const calls = callNumbers(allPosts);
+const base = siteBase(import.meta.env.BASE_URL);
+---
+
+<BaseLayout title="Vadin's Blog" description="A small, hand-linked blog. Every post lists what links back to it.">
+  <div class="wrap wrap--wide">
+    <section class="hero">
+      <p class="hero__eyebrow">A blog that keeps its own index</p>
+      <h1>Notes worth returning to, threaded together as they're written.</h1>
+      <p>
+        Each entry below is an ordinary Markdown post. When one mentions another with a
+        normal link, that connection shows up automatically at the bottom of both pages —
+        no wiki syntax, no database, just a build-time scan for
+        <code>/blog/&lt;slug&gt;</code> links.
+      </p>
+    </section>
+
+    <div class="section-heading">
+      <h2>Recent entries</h2>
+      <a href={`${base}blog/`}>View all →</a>
+    </div>
+    <div class="card-grid">
+      {posts.map((post) => (
+        <PostCard
+          slug={post.id}
+          title={post.data.title}
+          description={post.data.description}
+          call={calls.get(post.id) ?? ''}
+        />
+      ))}
+    </div>
+  </div>
+</BaseLayout>

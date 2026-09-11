@@ -1,0 +1,467 @@
+/* ---------------------------------------------------------------------- *
+ * Design tokens
+ * A quiet "library index card" palette: parchment paper, mossy ink,
+ * a botanical green for links/threads, and a small rust "stamp" accent
+ * used sparingly for tags and call-numbers.
+ * ---------------------------------------------------------------------- */
+:root {
+  --paper: #f0efe2;
+  --surface: #e7e4d1;
+  --ink: #22271d;
+  --ink-soft: #565b4c;
+  --line: #c9c3ab;
+  --accent: #3c6b49;
+  --accent-dim: #557a5f;
+  --stamp: #a85a28;
+
+  --font-display: 'Fraunces', 'Iowan Old Style', ui-serif, Georgia, serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --measure: 34rem;
+  --radius: 3px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #191d16;
+    --surface: #21261c;
+    --ink: #eae7d8;
+    --ink-soft: #a7ac97;
+    --line: #3a4032;
+    --accent: #7fb28c;
+    --accent-dim: #6a9a75;
+    --stamp: #d98a55;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: light dark;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: var(--accent);
+  text-decoration-color: var(--line);
+  text-underline-offset: 3px;
+}
+
+a:hover {
+  text-decoration-color: currentColor;
+}
+
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  margin: 0 0 0.5em;
+}
+
+p {
+  margin: 0 0 1.1em;
+}
+
+.wrap {
+  width: min(100% - 2.5rem, 46rem);
+  margin-inline: auto;
+}
+
+.wrap--wide {
+  width: min(100% - 2.5rem, 62rem);
+}
+
+/* ---------------------------------------------------------------------- *
+ * Site chrome
+ * ---------------------------------------------------------------------- */
+.site-header {
+  border-bottom: 1px solid var(--line);
+  padding: 1.75rem 0;
+}
+
+.site-header__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.wordmark {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.wordmark em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.site-nav {
+  display: flex;
+  gap: 1.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.site-nav a {
+  color: var(--ink-soft);
+  text-decoration: none;
+}
+
+.site-nav a:hover,
+.site-nav a[aria-current="page"] {
+  color: var(--accent);
+}
+
+.site-footer {
+  border-top: 1px solid var(--line);
+  margin-top: 5rem;
+  padding: 2rem 0 3rem;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+.site-footer a {
+  color: var(--ink-soft);
+}
+
+/* ---------------------------------------------------------------------- *
+ * Eyebrow / metadata (index-card stamp)
+ * ---------------------------------------------------------------------- */
+.meta {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+  letter-spacing: 0.02em;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.meta__stamp {
+  color: var(--stamp);
+}
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.tag {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.03em;
+  color: var(--accent-dim);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.15rem 0.6rem;
+  text-decoration: none;
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+}
+
+.tag:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ---------------------------------------------------------------------- *
+ * Hero
+ * ---------------------------------------------------------------------- */
+.hero {
+  padding: 4rem 0 3rem;
+}
+
+.hero__eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent-dim);
+  margin-bottom: 1rem;
+}
+
+.hero h1 {
+  font-size: clamp(2.2rem, 4vw + 1rem, 3.4rem);
+  max-width: 16ch;
+}
+
+.hero p {
+  max-width: var(--measure);
+  color: var(--ink-soft);
+  font-size: 1.1rem;
+}
+
+/* ---------------------------------------------------------------------- *
+ * Index cards (post previews)
+ * ---------------------------------------------------------------------- */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15.5rem, 1fr));
+  gap: 1.1rem;
+  padding: 2rem 0 4rem;
+}
+
+.card {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.25rem 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.card::before {
+  content: attr(data-call);
+  position: absolute;
+  top: 0.9rem;
+  right: 1.1rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--ink-soft);
+  opacity: 0.7;
+}
+
+.card h3 {
+  font-size: 1.15rem;
+  padding-right: 3.4rem;
+}
+
+.card p {
+  color: var(--ink-soft);
+  font-size: 0.94rem;
+  margin: 0;
+  flex-grow: 1;
+}
+
+/* ---------------------------------------------------------------------- *
+ * Post page
+ * ---------------------------------------------------------------------- */
+.post-header {
+  padding: 3.5rem 0 1.5rem;
+}
+
+.post-header h1 {
+  font-size: clamp(2rem, 3vw + 1rem, 2.75rem);
+  margin-top: 0.6rem;
+}
+
+.prose {
+  max-width: var(--measure);
+  padding-bottom: 2rem;
+}
+
+.prose h2 {
+  font-size: 1.5rem;
+  margin-top: 2.2em;
+}
+
+.prose h3 {
+  font-size: 1.2rem;
+  margin-top: 1.8em;
+}
+
+.prose blockquote {
+  margin: 1.5em 0;
+  padding-left: 1.1em;
+  border-left: 2px solid var(--accent);
+  color: var(--ink-soft);
+  font-style: italic;
+}
+
+.prose code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  background: var(--surface);
+  padding: 0.15em 0.4em;
+  border-radius: var(--radius);
+}
+
+.prose pre {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1rem 1.1rem;
+  overflow-x: auto;
+}
+
+.prose pre code {
+  background: none;
+  padding: 0;
+}
+
+.prose ul,
+.prose ol {
+  padding-left: 1.3em;
+}
+
+.prose hr {
+  border: none;
+  border-top: 1px solid var(--line);
+  margin: 2.5em 0;
+}
+
+/* ---------------------------------------------------------------------- *
+ * Backlinks — the signature element.
+ * A "cross-reference" card threaded together with a connecting line,
+ * echoing a library catalog's "see also" trail.
+ * ---------------------------------------------------------------------- */
+.backlinks {
+  max-width: var(--measure);
+  margin: 3rem 0 4rem;
+  padding-top: 2.2rem;
+  border-top: 1px dashed var(--line);
+}
+
+.backlinks__label {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent-dim);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.backlinks__label::before {
+  content: '';
+  width: 0.9rem;
+  height: 1px;
+  background: var(--accent);
+  display: inline-block;
+}
+
+.backlinks__empty {
+  font-size: 0.92rem;
+  color: var(--ink-soft);
+  font-style: italic;
+}
+
+.backlinks__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+
+.backlinks__list::before {
+  content: '';
+  position: absolute;
+  left: 0.35rem;
+  top: 0.5rem;
+  bottom: 0.5rem;
+  width: 1px;
+  background: var(--line);
+}
+
+.backlinks__item {
+  position: relative;
+  padding-left: 1.5rem;
+  margin-bottom: 0.85rem;
+}
+
+.backlinks__item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.55rem;
+  width: 0.7rem;
+  height: 1px;
+  background: var(--accent);
+}
+
+.backlinks__item a {
+  font-family: var(--font-display);
+  font-size: 1.02rem;
+  text-decoration: none;
+  color: var(--ink);
+}
+
+.backlinks__item a:hover {
+  color: var(--accent);
+}
+
+/* ---------------------------------------------------------------------- *
+ * Misc
+ * ---------------------------------------------------------------------- */
+.section-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: 3rem;
+  border-top: 1px solid var(--line);
+}
+
+.section-heading h2 {
+  font-size: 1.6rem;
+}
+
+.section-heading a {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.callout {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.4rem;
+  font-size: 0.95rem;
+  color: var(--ink-soft);
+}
+
+.callout code {
+  font-family: var(--font-mono);
+  background: var(--paper);
+  padding: 0.1em 0.35em;
+  border-radius: var(--radius);
+  color: var(--ink);
+}

@@ -1,0 +1,44 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { callNumbers } from '../../utils/callNumbers';
+
+export async function getStaticPaths() {
+  const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+  const tags = new Set<string>();
+  allPosts.forEach((post) => post.data.tags.forEach((tag) => tags.add(tag)));
+
+  return Array.from(tags).map((tag) => ({
+    params: { tag },
+    props: {
+      posts: allPosts.filter((post) => post.data.tags.includes(tag)),
+    },
+  }));
+}
+
+const { tag } = Astro.params;
+const { posts } = Astro.props;
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const calls = callNumbers(allPosts);
+const sorted = [...posts].sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+
+<BaseLayout title={`#${tag}`} description={`Posts tagged #${tag}.`}>
+  <div class="wrap wrap--wide">
+    <section class="hero" style="padding-bottom: 1rem;">
+      <p class="hero__eyebrow">Tag</p>
+      <h1>#{tag}</h1>
+    </section>
+    <div class="card-grid">
+      {sorted.map((post) => (
+        <PostCard
+          slug={post.id}
+          title={post.data.title}
+          description={post.data.description}
+          call={calls.get(post.id) ?? ''}
+        />
+      ))}
+    </div>
+  </div>
+</BaseLayout>

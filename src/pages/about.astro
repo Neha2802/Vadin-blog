@@ -1,0 +1,39 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="About" description="How this site and its backlinks work.">
+  <div class="wrap">
+    <section class="hero">
+      <p class="hero__eyebrow">About</p>
+      <h1>How Vadin's blog is kept</h1>
+      <p>
+        This site is built with <a href="https://astro.build" target="_blank" rel="noreferrer">Astro</a> and published as plain static HTML — no server, no database. Every post is a Markdown
+        file in <code>src/content/blog/</code>.
+      </p>
+    </section>
+
+    <div class="prose">
+      <h2>Writing a backlink</h2>
+      <p>
+        There's no special syntax to learn. Link to another post the normal Markdown way, using
+        its site-relative URL:
+      </p>
+      <pre><code>See my earlier note on [tide pools](/blog/tide-pools/).</code></pre>
+      <p>
+        At build time, a small script reads every post's source, looks for links that point at
+        <code>/blog/&lt;slug&gt;</code>, and builds a reverse index. That's what powers the
+        "Referenced by" list at the bottom of each entry — it always reflects the current state
+        of the content, and there's nothing to keep in sync by hand.
+      </p>
+
+      <h2>Why this design</h2>
+      <p>
+        A backlink is more honest than a tag: it says exactly which piece of writing thought
+        this one was worth mentioning, and lets you follow that thread in either direction.
+        Over time the posts stop reading like a stream and start reading like a small,
+        cross-referenced index — closer to a library card catalog than a feed.
+      </p>
+    </div>
+  </div>
+</BaseLayout>

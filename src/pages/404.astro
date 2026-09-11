@@ -1,0 +1,16 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { siteBase } from '../utils/base';
+const base = siteBase(import.meta.env.BASE_URL);
+---
+
+<BaseLayout title="Not found" description="This page doesn't exist.">
+  <div class="wrap">
+    <section class="hero">
+      <p class="hero__eyebrow">404</p>
+      <h1>This entry isn't in the catalog.</h1>
+      <p>The page you're looking for doesn't exist, or has moved.</p>
+      <p><a href={base}>← Back to Vadin's blog</a></p>
+    </section>
+  </div>
+</BaseLayout>
